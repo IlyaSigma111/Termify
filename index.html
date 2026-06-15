@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Termify — terminal browser for Android</title>
+<title>Termify — терминальный браузер для Android и Windows</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 
@@ -18,7 +18,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Radial glow background */
 body::before {
   content: '';
   position: fixed;
@@ -38,15 +37,8 @@ body::after {
   z-index: 0;
 }
 
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 40px 24px;
-  position: relative;
-  z-index: 1;
-}
+.container { max-width: 800px; margin: 0 auto; padding: 40px 24px; position: relative; z-index: 1; }
 
-/* Glass card */
 .glass {
   background: rgba(26,27,38,.75);
   border: 1px solid rgba(205,214,244,.08);
@@ -55,22 +47,10 @@ body::after {
   -webkit-backdrop-filter: blur(12px);
 }
 
-/* Header */
-header {
-  text-align: center;
-  padding: 80px 0 60px;
-}
-header h1 {
-  font-size: 48px;
-  font-weight: 700;
-  letter-spacing: -1px;
-}
+header { text-align: center; padding: 80px 0 60px; }
+header h1 { font-size: 48px; font-weight: 700; letter-spacing: -1px; }
 header h1 span { color: #89b4fa; }
-header .tagline {
-  color: #6c7086;
-  font-size: 16px;
-  margin-top: 12px;
-}
+header .tagline { color: #6c7086; font-size: 16px; margin-top: 12px; }
 header .badge {
   display: inline-block;
   background: rgba(137,180,250,.12);
@@ -83,48 +63,25 @@ header .badge {
   border: 1px solid rgba(137,180,250,.2);
 }
 
-/* Terminal preview */
-.terminal {
-  margin: 40px 0;
-  padding: 24px;
-  font-size: 14px;
-}
+.terminal { margin: 40px 0; padding: 24px; font-size: 14px; }
 .terminal .line { white-space: pre-wrap; word-break: break-all; }
 .terminal .prompt { color: #89b4fa; }
 .terminal .output { color: #a6e3a1; }
 .terminal .output2 { color: #f38ba8; }
-.terminal .cursor::after {
-  content: '█';
-  animation: blink 1s step-end infinite;
-  color: #89b4fa;
-}
+.terminal .cursor::after { content: '█'; animation: blink 1s step-end infinite; color: #89b4fa; }
 @keyframes blink { 50% { opacity: 0; } }
 
-/* Features */
 .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 48px 0; }
-.feature {
-  padding: 24px;
-  text-align: center;
-  transition: transform .2s, border-color .2s;
-}
+.feature { padding: 24px; text-align: center; transition: transform .2s, border-color .2s; }
 .feature:hover { transform: translateY(-4px); border-color: rgba(137,180,250,.3); }
 .feature .icon { font-size: 32px; margin-bottom: 12px; }
 .feature h3 { font-size: 14px; color: #cdd6f4; margin-bottom: 8px; }
 .feature p { font-size: 12px; color: #6c7086; }
 
-/* Themes showcase */
 .themes { margin: 48px 0; }
 .themes h2 { font-size: 20px; margin-bottom: 20px; text-align: center; }
 .theme-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-.theme-item {
-  padding: 12px 16px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 11px;
-  font-weight: 700;
-  border: 1px solid transparent;
-  transition: transform .2s;
-}
+.theme-item { padding: 12px 16px; border-radius: 8px; text-align: center; font-size: 11px; font-weight: 700; border: 1px solid transparent; transition: transform .2s; }
 .theme-item:hover { transform: scale(1.05); }
 .t-nord { background: #1a1b26; color: #89b4fa; border-color: #89b4fa33; }
 .t-dracula { background: #1a1b26; color: #bd93f9; border-color: #bd93f933; }
@@ -134,12 +91,7 @@ header .badge {
 .t-onedark { background: #18191e; color: #61afef; border-color: #61afef33; }
 .t-tokyo { background: #12121e; color: #bb9af7; border-color: #bb9af733; }
 
-/* Download section */
-.download-section {
-  margin: 48px 0;
-  padding: 40px;
-  text-align: center;
-}
+.download-section { margin: 48px 0; padding: 40px; text-align: center; }
 .download-section h2 { font-size: 22px; margin-bottom: 8px; }
 .download-section p { color: #6c7086; font-size: 13px; margin-bottom: 24px; }
 .download-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
@@ -156,43 +108,28 @@ header .badge {
 .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
 .btn-primary { background: #89b4fa; color: #121217; }
 .btn-primary:hover { background: #9fc5ff; }
-.btn-secondary {
-  background: rgba(26,27,38,.6);
-  color: #cdd6f4;
-  border: 1px solid rgba(205,214,244,.12);
-}
+.btn-green { background: #a6e3a1; color: #121217; }
+.btn-green:hover { background: #b8f0b3; }
+.btn-secondary { background: rgba(26,27,38,.6); color: #cdd6f4; border: 1px solid rgba(205,214,244,.12); }
 .btn-secondary:hover { background: rgba(26,27,38,.9); border-color: rgba(205,214,244,.2); }
 .btn .small { font-size: 10px; opacity: .6; font-weight: 400; }
 
-/* How to install */
 .install { margin: 48px 0; padding: 24px; }
 .install h3 { font-size: 16px; margin-bottom: 16px; }
 .install ol { padding-left: 20px; font-size: 13px; color: #a6adc8; }
 .install ol li { margin-bottom: 8px; }
-.install ol li code {
-  background: rgba(205,214,244,.06);
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  color: #89b4fa;
-}
+.install ol li code { background: rgba(205,214,244,.06); padding: 2px 8px; border-radius: 4px; font-size: 12px; color: #89b4fa; }
 
-/* Commands */
 .commands { margin: 48px 0; padding: 24px; }
 .commands h3 { font-size: 16px; margin-bottom: 16px; }
 .cmd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; font-size: 13px; }
 .cmd-grid code { color: #89b4fa; }
 .cmd-grid span { color: #6c7086; }
 
-/* Footer */
-footer {
-  text-align: center;
-  padding: 32px 0;
-  color: #585b70;
-  font-size: 12px;
-}
+.platform-label { display: inline-block; margin-top: 24px; font-size: 13px; color: #6c7086; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
 
-/* Responsive */
+footer { text-align: center; padding: 32px 0; color: #585b70; font-size: 12px; }
+
 @media (max-width: 600px) {
   header h1 { font-size: 32px; }
   .features { grid-template-columns: 1fr; }
@@ -206,53 +143,49 @@ footer {
 
 <div class="container">
 
-  <!-- Header -->
   <header>
     <h1><span>&#62;_</span> Termify</h1>
-    <p class="tagline">terminal-style browser for Android</p>
-    <span class="badge">v1.0 &middot; based on WebView &middot; 7 themes</span>
+    <p class="tagline">терминальный браузер для Android и Windows</p>
+    <span class="badge">v1.0 &middot; WebView &middot; 7 тем &middot; консоль</span>
   </header>
 
-  <!-- Terminal preview -->
   <div class="terminal glass">
     <div class="line"><span class="prompt">~/termify $</span> <span class="cursor"></span></div>
     <div class="line" style="margin-top:8px"><span class="prompt">&#9654;</span> <span class="output">╭────────────────────────────────╮</span></div>
-    <div class="line"><span class="prompt">&#9654;</span> <span class="output">│  Termify — terminal browser   │</span></div>
-    <div class="line"><span class="prompt">&#9654;</span> <span class="output">│  type `help` for commands     │</span></div>
+    <div class="line"><span class="prompt">&#9654;</span> <span class="output">│  Termify — терминальный браузер│</span></div>
+    <div class="line"><span class="prompt">&#9654;</span> <span class="output">│  напиши `help` для списка команд│</span></div>
     <div class="line"><span class="prompt">&#9654;</span> <span class="output">╰────────────────────────────────╯</span></div>
     <div class="line" style="margin-top:8px"><span class="prompt">~/termify $</span> theme tokyonight</div>
-    <div class="line"><span class="prompt">&#9654;</span> <span class="output">theme &#8594; Tokyo Night</span></div>
-    <div class="line"><span class="prompt">~/termify $</span> search how to exit vim</div>
-    <div class="line"><span class="prompt">&#9654;</span> <span class="output2">/search how to exit vim</span></div>
+    <div class="line"><span class="prompt">&#9654;</span> <span class="output">тема &#8594; Tokyo Night</span></div>
+    <div class="line"><span class="prompt">~/termify $</span> search как выйти из vim</div>
+    <div class="line"><span class="prompt">&#9654;</span> <span class="output2">/search как выйти из vim</span></div>
   </div>
 
-  <!-- Features -->
   <div class="features">
     <div class="feature glass">
       <div class="icon">&#9001;</div>
-      <h3>Console overlay</h3>
-      <p>Alt+F or tap &#62;_ to open the terminal. Type commands, search, switch themes.</p>
+      <h3>Консоль</h3>
+      <p>Alt+F или на &#62;_ — открывай терминал. Команды, поиск, смена темы.</p>
     </div>
     <div class="feature glass">
       <div class="icon">&#9776;</div>
-      <h3>Tab management</h3>
-      <p>Multiple tabs with swipeable buttons. Long-press to close.</p>
+      <h3>Вкладки</h3>
+      <p>Несколько вкладок с переключением. Долгий тап — закрыть.</p>
     </div>
     <div class="feature glass">
       <div class="icon">&#9728;</div>
-      <h3>7 themes</h3>
+      <h3>7 тем</h3>
       <p>Nord, Dracula, Catppuccin Mocha &amp; Latte, Gruvbox, One Dark, Tokyo Night.</p>
     </div>
     <div class="feature glass">
       <div class="icon">&#9881;</div>
-      <h3>Quick settings</h3>
-      <p>Font size, search engine preset, and theme picker — all from one panel.</p>
+      <h3>Настройки</h3>
+      <p>Размер шрифта, поисковик, выбор темы — всё в одной панели.</p>
     </div>
   </div>
 
-  <!-- Themes showcase -->
   <div class="themes">
-    <h2>&#9829; themes</h2>
+    <h2>&#9829; темы</h2>
     <div class="theme-grid">
       <div class="theme-item t-nord">Nord</div>
       <div class="theme-item t-dracula">Dracula</div>
@@ -264,47 +197,67 @@ footer {
     </div>
   </div>
 
-  <!-- Download -->
   <div class="download-section glass">
-    <h2>&#9660; download</h2>
-    <p>Termify for Android (API 24+) ~13 MB</p>
-    <div class="download-buttons">
+    <h2>&#9660; скачать</h2>
+
+    <p class="platform-label">&#9729; Android</p>
+    <p style="margin-bottom:16px">APK для Android 7+ (API 24+) ~13 МБ</p>
+    <div class="download-buttons" style="margin-bottom:12px">
       <a href="apk/Termify.apk" class="btn btn-primary" download>
-        &#9660; Download APK <span class="small">release</span>
+        &#9660; Скачать APK <span class="small">release</span>
       </a>
       <a href="apk/Termify-debug.apk" class="btn btn-secondary" download>
-        &#9660; Debug build <span class="small">unoptimized</span>
+        &#9660; Debug <span class="small">неоптимизирован</span>
+      </a>
+    </div>
+
+    <p class="platform-label">&#9000; Windows</p>
+    <p style="margin-bottom:16px">Портативная сборка (.NET 8 + WebView2) ~163 МБ</p>
+    <div class="download-buttons">
+      <a href="pc/Termify.exe" class="btn btn-green" download>
+        &#9660; Скачать Termify.exe <span class="small">single-file, готов к запуску</span>
       </a>
     </div>
   </div>
 
-  <!-- Install instructions -->
   <div class="install glass">
-    <h3>&#9432; how to install</h3>
-    <ol>
-      <li>Download the APK on your Android tablet/phone</li>
-      <li>Open the file &mdash; Android will ask to allow installation from unknown sources</li>
-      <li>Enable <code>Install from unknown apps</code> for your file manager or browser</li>
-      <li>Tap <code>Install</code> and you're done</li>
-    </ol>
-  </div>
-
-  <!-- Commands -->
-  <div class="commands glass">
-    <h3>&#62;_ console commands</h3>
-    <div class="cmd-grid">
-      <code>help</code><span>list all commands</span>
-      <code>search &lt;query&gt;</code><span>search via default engine</span>
-      <code>settings</code><span>open settings panel</span>
-      <code>theme &lt;name&gt;</code><span>switch theme (nord, dracula, mocha, latte, gruvbox, onedark, tokyonight)</span>
-      <code>exit</code><span>close Termify</span>
+    <h3>&#9432; установка</h3>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 24px; font-size: 13px;">
+      <div>
+        <p style="color:#89b4fa; font-weight:700; margin-bottom:8px;">&#9729; Android</p>
+        <ol style="padding-left:20px; color:#a6adc8;">
+          <li>Скачай APK на планшет/телефон</li>
+          <li>Открой файл — Android попросит разрешить установку</li>
+          <li>Разреши <code>Установка из неизвестных источников</code></li>
+          <li>Нажми <code>Установить</code></li>
+        </ol>
+      </div>
+      <div>
+        <p style="color:#a6e3a1; font-weight:700; margin-bottom:8px;">&#9000; Windows</p>
+        <ol style="padding-left:20px; color:#a6adc8;">
+          <li>Скачай <code>Termify.exe</code></li>
+          <li>Запусти — браузер готов к работе</li>
+          <li>Требуется <code>WebView2 Runtime</code> (обычно уже есть в Windows 11)</li>
+          <li>При первом запуске может быть задержка — распаковывается .NET</li>
+        </ol>
+      </div>
     </div>
   </div>
 
-  <!-- Footer -->
+  <div class="commands glass">
+    <h3>&#62;_ команды консоли</h3>
+    <div class="cmd-grid">
+      <code>help</code><span>список команд</span>
+      <code>search &lt;запрос&gt;</code><span>поиск в поисковике</span>
+      <code>settings</code><span>открыть настройки</span>
+      <code>theme &lt;имя&gt;</code><span>сменить тему (nord, dracula, mocha, latte, gruvbox, onedark, tokyonight)</span>
+      <code>exit</code><span>закрыть Termify</span>
+    </div>
+  </div>
+
   <footer>
-    Termify &mdash; built with .NET 8 + Android WebView<br>
-    source available on request
+    Termify &mdash; собрано на .NET 8 + WebView (Android) / WebView2 (Windows)<br>
+    исходный код по запросу
   </footer>
 
 </div>
