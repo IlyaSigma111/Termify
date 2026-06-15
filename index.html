@@ -83,13 +83,43 @@ header .badge {
   transition: background .3s, color .3s, border-color .3s;
 }
 
-.terminal { margin: 40px 0; padding: 24px; font-size: 14px; }
+.terminal { margin: 40px 0; padding: 0; font-size: 14px; overflow: hidden; }
+.terminal-output {
+  padding: 20px 24px 0;
+  max-height: 320px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+.terminal-output::-webkit-scrollbar { width: 4px; }
+.terminal-output::-webkit-scrollbar-track { background: transparent; }
+.terminal-output::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 2px; }
 .terminal .line { white-space: pre-wrap; word-break: break-all; }
 .terminal .prompt { color: var(--accent); transition: color .3s; }
 .terminal .output { color: var(--accent2); transition: color .3s; }
 .terminal .output2 { color: var(--accent3); transition: color .3s; }
-.terminal .cursor::after { content: '█'; animation: blink 1s step-end infinite; color: var(--accent); transition: color .3s; }
+.terminal-input-line {
+  display: flex;
+  align-items: center;
+  padding: 8px 24px 20px;
+  gap: 8px;
+}
+.terminal-input-line .prompt { flex-shrink: 0; user-select: none; }
+.terminal-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--fg);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  caret-color: var(--accent);
+  flex: 1;
+  transition: color .3s;
+}
+.terminal-input::placeholder { color: var(--muted); opacity: .4; }
+.terminal-cursor::after { content: '█'; animation: blink 1s step-end infinite; color: var(--accent); transition: color .3s; }
 @keyframes blink { 50% { opacity: 0; } }
+.terminal .err { color: var(--accent3); transition: color .3s; }
+.terminal .info { color: var(--muted); transition: color .3s; font-size: 12px; }
 
 .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 48px 0; }
 .feature { padding: 24px; text-align: center; transition: transform .2s, border-color .2s, background .3s; }
@@ -194,16 +224,18 @@ footer { text-align: center; padding: 32px 0; color: #585b70; font-size: 12px; }
     <span class="badge">v1.0 &middot; WebView &middot; 7 тем &middot; консоль</span>
   </header>
 
-  <div class="terminal glass">
-    <div class="line"><span class="prompt">~/termify $</span> <span class="cursor"></span></div>
-    <div class="line" style="margin-top:8px"><span class="prompt">&#9654;</span> <span class="output">╭────────────────────────────────╮</span></div>
-    <div class="line"><span class="prompt">&#9654;</span> <span class="output">│  Termify — терминальный браузер│</span></div>
-    <div class="line"><span class="prompt">&#9654;</span> <span class="output">│  напиши `help` для списка команд│</span></div>
-    <div class="line"><span class="prompt">&#9654;</span> <span class="output">╰────────────────────────────────╯</span></div>
-    <div class="line" style="margin-top:8px"><span class="prompt">~/termify $</span> theme <span id="terminal-theme-name">tokyonight</span></div>
-    <div class="line"><span class="prompt">&#9654;</span> <span class="output">тема &#8594; <span id="terminal-theme-result">Tokyo Night</span></span></div>
-    <div class="line"><span class="prompt">~/termify $</span> search как выйти из vim</div>
-    <div class="line"><span class="prompt">&#9654;</span> <span class="output2">/search как выйти из vim</span></div>
+  <div class="terminal glass" id="term">
+    <div class="terminal-output" id="term-output">
+      <div class="line"><span class="prompt">~/termify $</span> <span class="cursor"></span></div>
+      <div class="line" style="margin-top:8px"><span class="prompt">&#9654;</span> <span class="output">╭──────────────────────────────────╮</span></div>
+      <div class="line"><span class="prompt">&#9654;</span> <span class="output">│  Termify — интерактивный демо     │</span></div>
+      <div class="line"><span class="prompt">&#9654;</span> <span class="output">│  напиши `help` для списка команд  │</span></div>
+      <div class="line"><span class="prompt">&#9654;</span> <span class="output">╰──────────────────────────────────╯</span></div>
+    </div>
+    <div class="terminal-input-line">
+      <span class="prompt">~/termify $</span>
+      <input type="text" class="terminal-input" id="term-input" placeholder="введи команду..." autofocus spellcheck="false" autocomplete="off">
+    </div>
   </div>
 
   <div class="features">
@@ -220,7 +252,7 @@ footer { text-align: center; padding: 32px 0; color: #585b70; font-size: 12px; }
     <div class="feature glass">
       <div class="icon">&#9728;</div>
       <h3>7 тем</h3>
-      <p>Нажми на тему ниже — страница перекрасится в реальном времени.</p>
+      <p>Нажми на тему ниже или напиши <code>theme &lt;имя&gt;</code> в терминале.</p>
     </div>
     <div class="feature glass">
       <div class="icon">&#9881;</div>
@@ -295,9 +327,14 @@ footer { text-align: center; padding: 32px 0; color: #585b70; font-size: 12px; }
     <h3>&#62;_ команды консоли</h3>
     <div class="cmd-grid">
       <code>help</code><span>список команд</span>
-      <code>search &lt;запрос&gt;</code><span>поиск в поисковике</span>
-      <code>settings</code><span>открыть настройки</span>
+      <code>search &lt;запрос&gt;</code><span>поиск в интернете</span>
       <code>theme &lt;имя&gt;</code><span>сменить тему</span>
+      <code>settings</code><span>инфо о настройках</span>
+      <code>clear</code><span>очистить терминал</span>
+      <code>echo &lt;текст&gt;</code><span>повторить текст</span>
+      <code>date / time</code><span>текущая дата и время</span>
+      <code>whoami</code><span>кто ты</span>
+      <code>neofetch</code><span>инфо о системе</span>
       <code>exit</code><span>закрыть Termify</span>
     </div>
   </div>
@@ -401,8 +438,6 @@ function applyTheme(name) {
   palette.innerHTML = t.palette.map(c => `<div class="swatch" style="background:${c}" title="${c}"></div>`).join('');
 
   document.getElementById('palette-name').textContent = t.label;
-  document.getElementById('terminal-theme-name').textContent = name;
-  document.getElementById('terminal-theme-result').textContent = t.label;
 
   localStorage.setItem('termify-theme', name);
 }
@@ -417,6 +452,155 @@ if (saved && themes[saved]) {
 } else {
   applyTheme('tokyonight');
 }
+
+/* Interactive terminal */
+(function() {
+  const output = document.getElementById('term-output');
+  const input = document.getElementById('term-input');
+  const term = document.getElementById('term');
+
+  function termEscape(html) {
+    const d = document.createElement('div');
+    d.textContent = html;
+    return d.innerHTML;
+  }
+
+  function termLine(html, cls) {
+    const div = document.createElement('div');
+    div.className = 'line' + (cls ? ' ' + cls : '');
+    div.innerHTML = html;
+    return div;
+  }
+
+  function termWriteln(html, cls) {
+    output.appendChild(termLine(html, cls));
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function termPromptLine(cmd) {
+    termWriteln(`<span class="prompt">~/termify $</span> ${termEscape(cmd)}`);
+  }
+
+  function cmdHelp() {
+    termWriteln('<span class="prompt">&#9654;</span> <span class="output">╭──────────────────────────────────────╮</span>');
+    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  help        — список команд          │</span>');
+    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  search &lt;q&gt; — поиск в интернете      │</span>');
+    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  theme &lt;n&gt;  — сменить тему страницы   │</span>');
+    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  settings    — информация о настройках │</span>');
+    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  clear       — очистить терминал       │</span>');
+    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  echo &lt;txt&gt; — повторить текст          │</span>');
+    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  date        — текущая дата и время     │</span>');
+    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  whoami      — кто ты?                 │</span>');
+    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  neofetch    — информация о системе    │</span>');
+    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  exit        — закрыть Termify         │</span>');
+    termWriteln('<span class="prompt">&#9654;</span> <span class="output">╰──────────────────────────────────────╯</span>');
+  }
+
+  function cmdTheme(args) {
+    if (!args) {
+      termWriteln(`<span class="err">&#10008; укажи имя темы: nord, dracula, mocha, latte, gruvbox, onedark, tokyonight</span>`);
+      return;
+    }
+    const name = args.trim().toLowerCase().replace(/\s+/g, '');
+    if (!themes[name]) {
+      termWriteln(`<span class="err">&#10008; тема "${termEscape(args.trim())}" не найдена</span>`);
+      return;
+    }
+    applyTheme(name);
+    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">тема &#8594; ${themes[name].label}</span>`);
+  }
+
+  function cmdSearch(q) {
+    if (!q) {
+      termWriteln(`<span class="err">&#10008; укажи поисковый запрос</span>`);
+      return;
+    }
+    termWriteln(`<span class="prompt">&#9654;</span> <span class="output2">поиск: ${termEscape(q.trim())}</span>`);
+    termWriteln(`<span class="info">&#9654; открыл бы https://google.com/search?q=${encodeURIComponent(q.trim())}</span>`);
+  }
+
+  function cmdEcho(args) {
+    termWriteln(`<span class="prompt">&#9654;</span> ${termEscape(args || '')}`);
+  }
+
+  function cmdDate() {
+    const d = new Date();
+    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">${d.toLocaleString('ru-RU')}</span>`);
+  }
+
+  function cmdWhoami() {
+    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">Ты — пользователь Termify. Приятно познакомиться! &#9786;</span>`);
+  }
+
+  function cmdNeofetch() {
+    const h = navigator.userAgent;
+    const lang = navigator.language || 'ru-RU';
+    const cores = navigator.hardwareConcurrency || '?';
+    const v = '1.0.0';
+    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">╭────────────────────────────────╮</span>`);
+    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│  Termify v${v.padEnd(17)}│</span>`);
+    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│  ----------------------------- │</span>`);
+    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│  Browser: ${termEscape(h.slice(0,40))}│</span>`);
+    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│  Lang: ${lang.padEnd(30)}│</span>`);
+    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│  CPU cores: ${String(cores).padEnd(24)}│</span>`);
+    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│  Theme: ${localStorage.getItem('termify-theme') || 'tokyonight'}│</span>`);
+    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">╰────────────────────────────────╯</span>`);
+  }
+
+  function cmdSettings() {
+    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">&#9881; Настройки Termify:</span>`);
+    termWriteln(`<span class="info">&#9654; тема: ${themes[localStorage.getItem('termify-theme') || 'tokyonight'].label}</span>`);
+    termWriteln(`<span class="info">&#9654; шрифт: JetBrains Mono 14px</span>`);
+    termWriteln(`<span class="info">&#9654; поисковик: Google</span>`);
+    termWriteln(`<span class="info">&#9654; вкладки: да</span>`);
+    termWriteln(`<span class="info">&#9654; консоль: Alt+F / &#62;_</span>`);
+  }
+
+  function cmdExit() {
+    termWriteln(`<span class="output2">&#9654; Termify завершает работу...</span>`);
+    setTimeout(() => {
+      termWriteln(`<span class="output2">&#9654; (это демо-версия, браузер не закроется) </span>`);
+      termWriteln(`<span class="info">&#9654; в реальном приложении ` + "`exit`" + ` закроет Termify.</span>`);
+    }, 600);
+  }
+
+  function handleCommand(cmd) {
+    termPromptLine(cmd);
+    const parts = cmd.trim().match(/(?:[^\s"]+|"[^"]*")+/g) || [];
+    const command = parts[0] ? parts[0].toLowerCase() : '';
+    const args = parts.slice(1).join(' ').replace(/^"(.*)"$/, '$1');
+
+    switch (command) {
+      case 'help': cmdHelp(); break;
+      case 'theme': cmdTheme(args); break;
+      case 'search': cmdSearch(args); break;
+      case 'clear': output.innerHTML = ''; break;
+      case 'echo': cmdEcho(args); break;
+      case 'date': case 'time': cmdDate(); break;
+      case 'whoami': cmdWhoami(); break;
+      case 'neofetch': cmdNeofetch(); break;
+      case 'settings': cmdSettings(); break;
+      case 'exit': cmdExit(); break;
+      case '': break;
+      default:
+        termWriteln(`<span class="err">&#10008; команда не найдена: ${termEscape(command)}. Напиши help</span>`);
+    }
+  }
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      const cmd = input.value;
+      input.value = '';
+      if (cmd.trim()) handleCommand(cmd);
+    }
+  });
+
+  term.addEventListener('click', function() {
+    input.focus();
+  });
+
+  input.focus();
+})();
 </script>
 </body>
 </html>
