@@ -7,15 +7,31 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 
+:root {
+  --bg: #121217;
+  --fg: #cdd6f4;
+  --muted: #6c7086;
+  --accent: #89b4fa;
+  --accent2: #a6e3a1;
+  --accent3: #f38ba8;
+  --glass-bg: rgba(26,27,38,.75);
+  --glass-border: rgba(205,214,244,.08);
+  --glow1: rgba(137,180,250,.06);
+  --glow2: rgba(203,166,247,.05);
+  --badge-bg: rgba(137,180,250,.12);
+  --badge-border: rgba(137,180,250,.2);
+}
+
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 
 body {
-  background: #121217;
-  color: #cdd6f4;
+  background: var(--bg);
+  color: var(--fg);
   font-family: 'JetBrains Mono', monospace;
   line-height: 1.6;
   overflow-x: hidden;
+  transition: background .3s, color .3s;
 }
 
 body::before {
@@ -23,77 +39,106 @@ body::before {
   position: fixed;
   top: -30%; left: -10%;
   width: 80%; height: 80%;
-  background: radial-gradient(ellipse at center, rgba(137,180,250,.06) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, var(--glow1) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
+  transition: background .3s;
 }
 body::after {
   content: '';
   position: fixed;
   bottom: -20%; right: -10%;
   width: 60%; height: 60%;
-  background: radial-gradient(ellipse at center, rgba(203,166,247,.05) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, var(--glow2) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
+  transition: background .3s;
 }
 
 .container { max-width: 800px; margin: 0 auto; padding: 40px 24px; position: relative; z-index: 1; }
 
 .glass {
-  background: rgba(26,27,38,.75);
-  border: 1px solid rgba(205,214,244,.08);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  transition: background .3s, border-color .3s;
 }
 
 header { text-align: center; padding: 80px 0 60px; }
 header h1 { font-size: 48px; font-weight: 700; letter-spacing: -1px; }
-header h1 span { color: #89b4fa; }
-header .tagline { color: #6c7086; font-size: 16px; margin-top: 12px; }
+header h1 span { color: var(--accent); transition: color .3s; }
+header .tagline { color: var(--muted); font-size: 16px; margin-top: 12px; }
 header .badge {
   display: inline-block;
-  background: rgba(137,180,250,.12);
-  color: #89b4fa;
+  background: var(--badge-bg);
+  color: var(--accent);
   font-size: 12px;
   font-weight: 700;
   padding: 4px 12px;
   border-radius: 20px;
   margin-top: 16px;
-  border: 1px solid rgba(137,180,250,.2);
+  border: 1px solid var(--badge-border);
+  transition: background .3s, color .3s, border-color .3s;
 }
 
 .terminal { margin: 40px 0; padding: 24px; font-size: 14px; }
 .terminal .line { white-space: pre-wrap; word-break: break-all; }
-.terminal .prompt { color: #89b4fa; }
-.terminal .output { color: #a6e3a1; }
-.terminal .output2 { color: #f38ba8; }
-.terminal .cursor::after { content: '█'; animation: blink 1s step-end infinite; color: #89b4fa; }
+.terminal .prompt { color: var(--accent); transition: color .3s; }
+.terminal .output { color: var(--accent2); transition: color .3s; }
+.terminal .output2 { color: var(--accent3); transition: color .3s; }
+.terminal .cursor::after { content: '█'; animation: blink 1s step-end infinite; color: var(--accent); transition: color .3s; }
 @keyframes blink { 50% { opacity: 0; } }
 
 .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 48px 0; }
-.feature { padding: 24px; text-align: center; transition: transform .2s, border-color .2s; }
-.feature:hover { transform: translateY(-4px); border-color: rgba(137,180,250,.3); }
+.feature { padding: 24px; text-align: center; transition: transform .2s, border-color .2s, background .3s; }
+.feature:hover { transform: translateY(-4px); border-color: var(--accent); }
 .feature .icon { font-size: 32px; margin-bottom: 12px; }
-.feature h3 { font-size: 14px; color: #cdd6f4; margin-bottom: 8px; }
-.feature p { font-size: 12px; color: #6c7086; }
+.feature h3 { font-size: 14px; color: var(--fg); margin-bottom: 8px; transition: color .3s; }
+.feature p { font-size: 12px; color: var(--muted); transition: color .3s; }
 
 .themes { margin: 48px 0; }
 .themes h2 { font-size: 20px; margin-bottom: 20px; text-align: center; }
 .theme-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-.theme-item { padding: 12px 16px; border-radius: 8px; text-align: center; font-size: 11px; font-weight: 700; border: 1px solid transparent; transition: transform .2s; }
+.theme-item {
+  padding: 12px 16px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  border: 2px solid transparent;
+  transition: transform .2s, border-color .2s, box-shadow .2s;
+  cursor: pointer;
+}
 .theme-item:hover { transform: scale(1.05); }
-.t-nord { background: #1a1b26; color: #89b4fa; border-color: #89b4fa33; }
-.t-dracula { background: #1a1b26; color: #bd93f9; border-color: #bd93f933; }
-.t-mocha { background: #181825; color: #cba6f7; border-color: #cba6f733; }
-.t-latte { background: #efe7d3; color: #8839ef; border-color: #8839ef33; }
-.t-gruvbox { background: #1d1c17; color: #b8bb26; border-color: #b8bb2633; }
-.t-onedark { background: #18191e; color: #61afef; border-color: #61afef33; }
-.t-tokyo { background: #12121e; color: #bb9af7; border-color: #bb9af733; }
+.theme-item.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 16px rgba(137,180,250,.25);
+}
+.t-nord { background: #2e3440; color: #88c0d0; }
+.t-dracula { background: #282a36; color: #bd93f9; }
+.t-mocha { background: #1e1e2e; color: #cba6f7; }
+.t-latte { background: #eff1f5; color: #8839ef; }
+.t-gruvbox { background: #282828; color: #b8bb26; }
+.t-onedark { background: #282c34; color: #61afef; }
+.t-tokyo { background: #1a1b2e; color: #bb9af7; }
+
+/* Theme preview palette */
+.palette { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.palette .swatch {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  border: 2px solid var(--glass-border);
+  transition: transform .2s;
+}
+.palette .swatch:hover { transform: scale(1.15); }
+.palette-label { text-align: center; font-size: 11px; color: var(--muted); margin-top: 12px; transition: color .3s; }
+.palette-label span { color: var(--accent); font-weight: 700; transition: color .3s; }
 
 .download-section { margin: 48px 0; padding: 40px; text-align: center; }
 .download-section h2 { font-size: 22px; margin-bottom: 8px; }
-.download-section p { color: #6c7086; font-size: 13px; margin-bottom: 24px; }
+.download-section p { color: var(--muted); font-size: 13px; margin-bottom: 24px; transition: color .3s; }
 .download-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 .btn {
   display: inline-flex; align-items: center; gap: 10px;
@@ -102,31 +147,31 @@ header .badge {
   font-family: 'JetBrains Mono', monospace;
   font-size: 14px; font-weight: 700;
   text-decoration: none;
-  transition: transform .2s, box-shadow .2s;
+  transition: transform .2s, box-shadow .2s, background .3s, color .3s;
   cursor: pointer;
 }
 .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
-.btn-primary { background: #89b4fa; color: #121217; }
-.btn-primary:hover { background: #9fc5ff; }
-.btn-green { background: #a6e3a1; color: #121217; }
-.btn-green:hover { background: #b8f0b3; }
-.btn-secondary { background: rgba(26,27,38,.6); color: #cdd6f4; border: 1px solid rgba(205,214,244,.12); }
-.btn-secondary:hover { background: rgba(26,27,38,.9); border-color: rgba(205,214,244,.2); }
+.btn-primary { background: var(--accent); color: var(--bg); }
+.btn-primary:hover { filter: brightness(1.1); }
+.btn-green { background: var(--accent2); color: var(--bg); }
+.btn-green:hover { filter: brightness(1.1); }
+.btn-secondary { background: rgba(26,27,38,.6); color: var(--fg); border: 1px solid var(--glass-border); }
+.btn-secondary:hover { background: rgba(26,27,38,.9); border-color: var(--accent); }
 .btn .small { font-size: 10px; opacity: .6; font-weight: 400; }
 
 .install { margin: 48px 0; padding: 24px; }
 .install h3 { font-size: 16px; margin-bottom: 16px; }
-.install ol { padding-left: 20px; font-size: 13px; color: #a6adc8; }
+.install ol { padding-left: 20px; font-size: 13px; color: var(--muted); transition: color .3s; }
 .install ol li { margin-bottom: 8px; }
-.install ol li code { background: rgba(205,214,244,.06); padding: 2px 8px; border-radius: 4px; font-size: 12px; color: #89b4fa; }
+.install ol li code { background: rgba(205,214,244,.06); padding: 2px 8px; border-radius: 4px; font-size: 12px; color: var(--accent); transition: color .3s; }
 
 .commands { margin: 48px 0; padding: 24px; }
 .commands h3 { font-size: 16px; margin-bottom: 16px; }
 .cmd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; font-size: 13px; }
-.cmd-grid code { color: #89b4fa; }
-.cmd-grid span { color: #6c7086; }
+.cmd-grid code { color: var(--accent); transition: color .3s; }
+.cmd-grid span { color: var(--muted); transition: color .3s; }
 
-.platform-label { display: inline-block; margin-top: 24px; font-size: 13px; color: #6c7086; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.platform-label { display: inline-block; margin-top: 24px; font-size: 13px; color: var(--muted); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; transition: color .3s; }
 
 footer { text-align: center; padding: 32px 0; color: #585b70; font-size: 12px; }
 
@@ -155,8 +200,8 @@ footer { text-align: center; padding: 32px 0; color: #585b70; font-size: 12px; }
     <div class="line"><span class="prompt">&#9654;</span> <span class="output">│  Termify — терминальный браузер│</span></div>
     <div class="line"><span class="prompt">&#9654;</span> <span class="output">│  напиши `help` для списка команд│</span></div>
     <div class="line"><span class="prompt">&#9654;</span> <span class="output">╰────────────────────────────────╯</span></div>
-    <div class="line" style="margin-top:8px"><span class="prompt">~/termify $</span> theme tokyonight</div>
-    <div class="line"><span class="prompt">&#9654;</span> <span class="output">тема &#8594; Tokyo Night</span></div>
+    <div class="line" style="margin-top:8px"><span class="prompt">~/termify $</span> theme <span id="terminal-theme-name">tokyonight</span></div>
+    <div class="line"><span class="prompt">&#9654;</span> <span class="output">тема &#8594; <span id="terminal-theme-result">Tokyo Night</span></span></div>
     <div class="line"><span class="prompt">~/termify $</span> search как выйти из vim</div>
     <div class="line"><span class="prompt">&#9654;</span> <span class="output2">/search как выйти из vim</span></div>
   </div>
@@ -175,7 +220,7 @@ footer { text-align: center; padding: 32px 0; color: #585b70; font-size: 12px; }
     <div class="feature glass">
       <div class="icon">&#9728;</div>
       <h3>7 тем</h3>
-      <p>Nord, Dracula, Catppuccin Mocha &amp; Latte, Gruvbox, One Dark, Tokyo Night.</p>
+      <p>Нажми на тему ниже — страница перекрасится в реальном времени.</p>
     </div>
     <div class="feature glass">
       <div class="icon">&#9881;</div>
@@ -185,16 +230,18 @@ footer { text-align: center; padding: 32px 0; color: #585b70; font-size: 12px; }
   </div>
 
   <div class="themes">
-    <h2>&#9829; темы</h2>
+    <h2>&#9829; темы <span style="font-size:12px;color:var(--muted)">— нажми на любую</span></h2>
     <div class="theme-grid">
-      <div class="theme-item t-nord">Nord</div>
-      <div class="theme-item t-dracula">Dracula</div>
-      <div class="theme-item t-mocha">Mocha</div>
-      <div class="theme-item t-latte">Latte</div>
-      <div class="theme-item t-gruvbox">Gruvbox</div>
-      <div class="theme-item t-onedark">One Dark</div>
-      <div class="theme-item t-tokyo">Tokyo Night</div>
+      <div class="theme-item t-nord" data-theme="nord">Nord</div>
+      <div class="theme-item t-dracula" data-theme="dracula">Dracula</div>
+      <div class="theme-item t-mocha" data-theme="mocha">Mocha</div>
+      <div class="theme-item t-latte" data-theme="latte">Latte</div>
+      <div class="theme-item t-gruvbox" data-theme="gruvbox">Gruvbox</div>
+      <div class="theme-item t-onedark" data-theme="onedark">One Dark</div>
+      <div class="theme-item t-tokyo" data-theme="tokyonight">Tokyo Night</div>
     </div>
+    <div class="palette" id="palette"></div>
+    <div class="palette-label" id="palette-label">&#9654; <span id="palette-name">Tokyo Night</span></div>
   </div>
 
   <div class="download-section glass">
@@ -212,10 +259,10 @@ footer { text-align: center; padding: 32px 0; color: #585b70; font-size: 12px; }
     </div>
 
     <p class="platform-label">&#9000; Windows</p>
-    <p style="margin-bottom:16px">Портативная сборка (.NET 8 + WebView2) ~163 МБ</p>
+    <p style="margin-bottom:16px">Портативная сборка (.NET 8 + WebView2) ~3 МБ</p>
     <div class="download-buttons">
       <a href="pc/Termify.exe" class="btn btn-green" download>
-        &#9660; Скачать Termify.exe <span class="small">single-file, готов к запуску</span>
+        &#9660; Скачать Termify.exe <span class="small">требуется .NET 8 Runtime</span>
       </a>
     </div>
   </div>
@@ -224,8 +271,8 @@ footer { text-align: center; padding: 32px 0; color: #585b70; font-size: 12px; }
     <h3>&#9432; установка</h3>
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 24px; font-size: 13px;">
       <div>
-        <p style="color:#89b4fa; font-weight:700; margin-bottom:8px;">&#9729; Android</p>
-        <ol style="padding-left:20px; color:#a6adc8;">
+        <p style="color:var(--accent); font-weight:700; margin-bottom:8px; transition:color .3s;">&#9729; Android</p>
+        <ol style="padding-left:20px; color:var(--muted); transition:color .3s;">
           <li>Скачай APK на планшет/телефон</li>
           <li>Открой файл — Android попросит разрешить установку</li>
           <li>Разреши <code>Установка из неизвестных источников</code></li>
@@ -233,12 +280,12 @@ footer { text-align: center; padding: 32px 0; color: #585b70; font-size: 12px; }
         </ol>
       </div>
       <div>
-        <p style="color:#a6e3a1; font-weight:700; margin-bottom:8px;">&#9000; Windows</p>
-        <ol style="padding-left:20px; color:#a6adc8;">
+        <p style="color:var(--accent2); font-weight:700; margin-bottom:8px; transition:color .3s;">&#9000; Windows</p>
+        <ol style="padding-left:20px; color:var(--muted); transition:color .3s;">
           <li>Скачай <code>Termify.exe</code></li>
+          <li>Установи <code>.NET 8 Runtime</code> если ещё нет</li>
           <li>Запусти — браузер готов к работе</li>
           <li>Требуется <code>WebView2 Runtime</code> (обычно уже есть в Windows 11)</li>
-          <li>При первом запуске может быть задержка — распаковывается .NET</li>
         </ol>
       </div>
     </div>
@@ -250,7 +297,7 @@ footer { text-align: center; padding: 32px 0; color: #585b70; font-size: 12px; }
       <code>help</code><span>список команд</span>
       <code>search &lt;запрос&gt;</code><span>поиск в поисковике</span>
       <code>settings</code><span>открыть настройки</span>
-      <code>theme &lt;имя&gt;</code><span>сменить тему (nord, dracula, mocha, latte, gruvbox, onedark, tokyonight)</span>
+      <code>theme &lt;имя&gt;</code><span>сменить тему</span>
       <code>exit</code><span>закрыть Termify</span>
     </div>
   </div>
@@ -262,5 +309,114 @@ footer { text-align: center; padding: 32px 0; color: #585b70; font-size: 12px; }
 
 </div>
 
+<script>
+const themes = {
+  nord: {
+    label: 'Nord',
+    bg: '#2e3440', fg: '#d8dee9', muted: '#616e88',
+    accent: '#88c0d0', accent2: '#a3be8c', accent3: '#bf616a',
+    glassBg: 'rgba(46,52,64,.8)', glassBorder: 'rgba(216,222,233,.1)',
+    glow1: 'rgba(136,192,208,.06)', glow2: 'rgba(129,161,193,.05)',
+    badgeBg: 'rgba(136,192,208,.15)', badgeBorder: 'rgba(136,192,208,.25)',
+    palette: ['#88c0d0','#81a1c1','#a3be8c','#bf616a','#b48ead','#ebcb8b']
+  },
+  dracula: {
+    label: 'Dracula',
+    bg: '#282a36', fg: '#f8f8f2', muted: '#6272a4',
+    accent: '#bd93f9', accent2: '#50fa7b', accent3: '#ff5555',
+    glassBg: 'rgba(40,42,54,.8)', glassBorder: 'rgba(248,248,242,.08)',
+    glow1: 'rgba(189,147,249,.06)', glow2: 'rgba(80,250,123,.05)',
+    badgeBg: 'rgba(189,147,249,.15)', badgeBorder: 'rgba(189,147,249,.25)',
+    palette: ['#bd93f9','#6272a4','#50fa7b','#ff5555','#ffb86c','#8be9fd']
+  },
+  mocha: {
+    label: 'Catppuccin Mocha',
+    bg: '#1e1e2e', fg: '#cdd6f4', muted: '#6c7086',
+    accent: '#cba6f7', accent2: '#a6e3a1', accent3: '#f38ba8',
+    glassBg: 'rgba(30,30,46,.8)', glassBorder: 'rgba(205,214,244,.08)',
+    glow1: 'rgba(203,166,247,.06)', glow2: 'rgba(137,180,250,.05)',
+    badgeBg: 'rgba(203,166,247,.15)', badgeBorder: 'rgba(203,166,247,.25)',
+    palette: ['#cba6f7','#89b4fa','#a6e3a1','#f38ba8','#fab387','#94e2d5']
+  },
+  latte: {
+    label: 'Catppuccin Latte',
+    bg: '#eff1f5', fg: '#4c4f69', muted: '#9ca0b0',
+    accent: '#8839ef', accent2: '#40a02b', accent3: '#d20f39',
+    glassBg: 'rgba(239,241,245,.85)', glassBorder: 'rgba(76,79,105,.12)',
+    glow1: 'rgba(136,57,239,.06)', glow2: 'rgba(30,102,245,.05)',
+    badgeBg: 'rgba(136,57,239,.12)', badgeBorder: 'rgba(136,57,239,.2)',
+    palette: ['#8839ef','#1e66f5','#40a02b','#d20f39','#fe640b','#04a5e5']
+  },
+  gruvbox: {
+    label: 'Gruvbox',
+    bg: '#282828', fg: '#ebdbb2', muted: '#928374',
+    accent: '#d3869b', accent2: '#b8bb26', accent3: '#fb4934',
+    glassBg: 'rgba(40,40,40,.8)', glassBorder: 'rgba(235,219,178,.1)',
+    glow1: 'rgba(211,134,155,.06)', glow2: 'rgba(184,187,38,.05)',
+    badgeBg: 'rgba(211,134,155,.15)', badgeBorder: 'rgba(211,134,155,.25)',
+    palette: ['#d3869b','#83a598','#b8bb26','#fb4934','#fabd2f','#8ec07c']
+  },
+  onedark: {
+    label: 'One Dark',
+    bg: '#282c34', fg: '#abb2bf', muted: '#5c6370',
+    accent: '#61afef', accent2: '#98c379', accent3: '#e06c75',
+    glassBg: 'rgba(40,44,52,.8)', glassBorder: 'rgba(171,178,191,.08)',
+    glow1: 'rgba(97,175,239,.06)', glow2: 'rgba(198,120,221,.04)',
+    badgeBg: 'rgba(97,175,239,.15)', badgeBorder: 'rgba(97,175,239,.25)',
+    palette: ['#61afef','#c678dd','#98c379','#e06c75','#d19a66','#56b6c2']
+  },
+  tokyonight: {
+    label: 'Tokyo Night',
+    bg: '#12121e', fg: '#a9b1d6', muted: '#565f89',
+    accent: '#bb9af7', accent2: '#9ece6a', accent3: '#f7768e',
+    glassBg: 'rgba(18,18,30,.8)', glassBorder: 'rgba(169,177,214,.08)',
+    glow1: 'rgba(187,154,247,.06)', glow2: 'rgba(122,162,247,.05)',
+    badgeBg: 'rgba(187,154,247,.15)', badgeBorder: 'rgba(187,154,247,.25)',
+    palette: ['#bb9af7','#7aa2f7','#9ece6a','#f7768e','#e0af68','#73daca']
+  }
+};
+
+function applyTheme(name) {
+  const t = themes[name];
+  if (!t) return;
+  const r = document.documentElement.style;
+  r.setProperty('--bg', t.bg);
+  r.setProperty('--fg', t.fg);
+  r.setProperty('--muted', t.muted);
+  r.setProperty('--accent', t.accent);
+  r.setProperty('--accent2', t.accent2);
+  r.setProperty('--accent3', t.accent3);
+  r.setProperty('--glass-bg', t.glassBg);
+  r.setProperty('--glass-border', t.glassBorder);
+  r.setProperty('--glow1', t.glow1);
+  r.setProperty('--glow2', t.glow2);
+  r.setProperty('--badge-bg', t.badgeBg);
+  r.setProperty('--badge-border', t.badgeBorder);
+
+  document.querySelectorAll('.theme-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.theme === name);
+  });
+
+  const palette = document.getElementById('palette');
+  palette.innerHTML = t.palette.map(c => `<div class="swatch" style="background:${c}" title="${c}"></div>`).join('');
+
+  document.getElementById('palette-name').textContent = t.label;
+  document.getElementById('terminal-theme-name').textContent = name;
+  document.getElementById('terminal-theme-result').textContent = t.label;
+
+  localStorage.setItem('termify-theme', name);
+}
+
+document.querySelectorAll('.theme-item').forEach(el => {
+  el.addEventListener('click', () => applyTheme(el.dataset.theme));
+});
+
+const saved = localStorage.getItem('termify-theme');
+if (saved && themes[saved]) {
+  applyTheme(saved);
+} else {
+  applyTheme('tokyonight');
+}
+</script>
 </body>
 </html>
