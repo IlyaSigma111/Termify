@@ -1,970 +1,547 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Termify — терминальный браузер для Android и Windows</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Termify — Terminal Browser</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-:root {
-  --bg: #121217;
-  --fg: #cdd6f4;
-  --muted: #6c7086;
-  --accent: #89b4fa;
-  --accent2: #a6e3a1;
-  --accent3: #f38ba8;
-  --glass-bg: rgba(26,27,38,.75);
-  --glass-border: rgba(205,214,244,.08);
-  --glow1: rgba(137,180,250,.06);
-  --glow2: rgba(203,166,247,.05);
-  --badge-bg: rgba(137,180,250,.12);
-  --badge-border: rgba(137,180,250,.2);
-}
+    :root {
+      --bg: #0a0a0f;
+      --bg2: #111118;
+      --bg3: #1a1a28;
+      --fg: #e8e8f0;
+      --muted: #6c6c8a;
+      --accent: #7c9af0;
+      --accent2: #5ce0a0;
+      --border: #2a2a3e;
+      --font: 'Inter', -apple-system, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
 
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
 
-body {
-  background: var(--bg);
-  color: var(--fg);
-  font-family: 'JetBrains Mono', monospace;
-  line-height: 1.6;
-  overflow-x: hidden;
-  transition: background .3s, color .3s;
-}
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
 
-body::before {
-  content: '';
-  position: fixed;
-  top: -30%; left: -10%;
-  width: 80%; height: 80%;
-  background: radial-gradient(ellipse at center, var(--glow1) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-  transition: background .3s;
-}
-body::after {
-  content: '';
-  position: fixed;
-  bottom: -20%; right: -10%;
-  width: 60%; height: 60%;
-  background: radial-gradient(ellipse at center, var(--glow2) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-  transition: background .3s;
-}
+    /* ─── Nav ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(10,10,15,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent2); }
+    .nav-links { display: flex; gap: 24px; align-items: center; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--fg); }
+    .nav-download {
+      background: var(--accent);
+      color: #fff !important;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 600 !important;
+      transition: all 0.2s !important;
+    }
+    .nav-download:hover {
+      background: #6a8ae0;
+      transform: translateY(-1px);
+    }
 
-.container { max-width: 800px; margin: 0 auto; padding: 40px 24px; position: relative; z-index: 1; }
+    /* ─── Hero ─── */
+    .hero {
+      padding: 140px 0 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(124,154,240,0.06) 0%, transparent 70%);
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 4px 14px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-family: var(--mono);
+      color: var(--accent2);
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 20px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 480px;
+      margin-bottom: 32px;
+      line-height: 1.7;
+    }
+    .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+      font-family: var(--font);
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #6a8ae0;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(124,154,240,0.3);
+    }
+    .btn-secondary {
+      background: var(--bg3);
+      color: var(--fg);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: var(--border);
+      transform: translateY(-2px);
+    }
+    .btn svg { width: 20px; height: 20px; }
 
-.glass {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: background .3s, border-color .3s;
-}
+    .hero-visual {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-terminal {
+      width: 100%;
+      max-width: 540px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .terminal-dots {
+      display: flex;
+      gap: 8px;
+      padding: 14px 16px;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+    }
+    .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .terminal-dot.r { background: #ff5f57; }
+    .terminal-dot.y { background: #ffbd2e; }
+    .terminal-dot.g { background: #28c840; }
 
-header { text-align: center; padding: 80px 0 60px; }
-header h1 { font-size: 48px; font-weight: 700; letter-spacing: -1px; }
-header h1 span { color: var(--accent); transition: color .3s; }
-header .tagline { color: var(--muted); font-size: 16px; margin-top: 12px; }
-header .badge {
-  display: inline-block;
-  background: var(--badge-bg);
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 12px;
-  border-radius: 20px;
-  margin-top: 16px;
-  border: 1px solid var(--badge-border);
-  transition: background .3s, color .3s, border-color .3s;
-}
+    .terminal-content {
+      padding: 20px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+    .terminal-line { color: var(--muted); }
+    .terminal-line .prompt { color: var(--accent2); }
+    .terminal-line .cmd { color: var(--fg); }
+    .terminal-line .res { color: var(--muted); }
+    .terminal-line .accent { color: var(--accent); }
+    .terminal-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 16px;
+      background: var(--accent);
+      animation: blink 1s step-end infinite;
+      vertical-align: text-bottom;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
 
-.terminal { margin: 40px 0; padding: 0; font-size: 14px; overflow: hidden; }
-.terminal-output {
-  padding: 20px 24px 0;
-  max-height: 320px;
-  overflow-y: auto;
-  scroll-behavior: smooth;
-}
-.terminal-output::-webkit-scrollbar { width: 4px; }
-.terminal-output::-webkit-scrollbar-track { background: transparent; }
-.terminal-output::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 2px; }
-.terminal .line { white-space: pre-wrap; word-break: break-all; }
-.terminal .prompt { color: var(--accent); transition: color .3s; }
-.terminal .output { color: var(--accent2); transition: color .3s; }
-.terminal .output2 { color: var(--accent3); transition: color .3s; }
-.terminal-input-line {
-  display: flex;
-  align-items: center;
-  padding: 8px 24px 20px;
-  gap: 8px;
-}
-.terminal-input-line .prompt { flex-shrink: 0; user-select: none; }
-.terminal-input {
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--fg);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
-  caret-color: var(--accent);
-  flex: 1;
-  transition: color .3s;
-}
-.terminal-input::placeholder { color: var(--muted); opacity: .4; }
-.terminal-cursor::after { content: '█'; animation: blink 1s step-end infinite; color: var(--accent); transition: color .3s; }
-@keyframes blink { 50% { opacity: 0; } }
-.terminal .err { color: var(--accent3); transition: color .3s; }
-.terminal .info { color: var(--muted); transition: color .3s; font-size: 12px; }
+    /* ─── Features ─── */
+    .features {
+      padding: 100px 0;
+      border-top: 1px solid var(--border);
+    }
+    .features h2 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .features-sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: 16px;
+      margin-bottom: 60px;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      transition: all 0.3s;
+    }
+    .feature-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--bg3);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .feature-icon svg { width: 24px; height: 24px; color: var(--accent); }
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .feature-card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
 
-/* Tab browser demo */
-.tab-browser { margin: 40px 0; overflow: hidden; }
-.tab-bar {
-  display: flex; align-items: flex-end; gap: 2px;
-  padding: 8px 8px 0; overflow-x: auto;
-  scrollbar-width: none;
-}
-.tab-bar::-webkit-scrollbar { display: none; }
-.tab-btn {
-  flex-shrink: 0;
-  display: flex; align-items: center; gap: 6px;
-  padding: 7px 12px 7px 14px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  background: rgba(205,214,244,.04);
-  color: var(--muted);
-  border: 1px solid var(--glass-border);
-  border-bottom: none;
-  border-radius: 8px 8px 0 0;
-  cursor: pointer;
-  transition: background .2s, color .2s, border-color .2s;
-  user-select: none;
-  min-width: 0;
-}
-.tab-btn:hover { background: rgba(205,214,244,.08); color: var(--fg); }
-.tab-btn.active {
-  background: var(--glass-bg);
-  color: var(--fg);
-  border-color: var(--glass-border);
-  position: relative;
-  z-index: 1;
-}
-.tab-btn .tab-close {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 16px; height: 16px; border-radius: 4px;
-  font-size: 10px; line-height: 1;
-  opacity: 0; transition: opacity .15s, background .15s;
-  flex-shrink: 0;
-}
-.tab-btn:hover .tab-close { opacity: .6; }
-.tab-btn .tab-close:hover { opacity: 1; background: rgba(243,139,168,.2); color: var(--accent3); }
-.tab-btn .tab-fav { font-size: 14px; flex-shrink: 0; }
-.tab-btn .tab-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100px; }
-.tab-add {
-  flex-shrink: 0;
-  width: 28px; height: 28px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 6px;
-  font-size: 16px; line-height: 1;
-  color: var(--muted);
-  cursor: pointer;
-  transition: background .15s, color .15s;
-  border: none; background: transparent;
-  font-family: 'JetBrains Mono', monospace;
-  margin-bottom: 1px;
-}
-.tab-add:hover { background: rgba(205,214,244,.08); color: var(--fg); }
-.tab-content {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 0 0 12px 12px;
-  padding: 20px 24px;
-  min-height: 200px;
-  transition: background .3s, border-color .3s;
-}
-.tab-page { display: none; }
-.tab-page.active { display: block; }
-.tab-page h3 { font-size: 16px; margin-bottom: 12px; }
-.tab-page p { font-size: 13px; color: var(--muted); line-height: 1.7; transition: color .3s; }
-.tab-page .feature-list { display: grid; gap: 12px; margin-top: 16px; }
-.tab-page .feature-item {
-  display: flex; gap: 12px; align-items: flex-start;
-  padding: 12px 16px;
-  background: rgba(205,214,244,.03);
-  border-radius: 8px;
-  border: 1px solid var(--glass-border);
-  transition: border-color .2s;
-}
-.tab-page .feature-item:hover { border-color: var(--accent); }
-.tab-page .feature-item .fi-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
-.tab-page .feature-item .fi-title { font-size: 13px; color: var(--fg); font-weight: 700; transition: color .3s; }
-.tab-page .feature-item .fi-desc { font-size: 12px; color: var(--muted); margin-top: 2px; transition: color .3s; }
+    /* ─── Themes ─── */
+    .themes {
+      padding: 100px 0;
+      border-top: 1px solid var(--border);
+    }
+    .themes h2 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .themes-sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: 16px;
+      margin-bottom: 48px;
+    }
+    .theme-circles {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .theme-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .theme-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      transition: all 0.3s;
+    }
+    .theme-circle:hover { transform: scale(1.1); border-color: var(--accent); }
+    .theme-item span { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+    .theme-nord { background: #1a1b26; }
+    .theme-dracula { background: #282a36; }
+    .theme-mocha { background: #1e1e2e; }
+    .theme-latte { background: #e6e0e6; }
+    .theme-gruvbox { background: #282828; }
+    .theme-onedark { background: #21252b; }
+    .theme-tokyo { background: #1a1b2e; }
 
-.themes { margin: 48px 0; }
-.themes h2 { font-size: 20px; margin-bottom: 20px; text-align: center; }
-.theme-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-.theme-item {
-  padding: 12px 16px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 11px;
-  font-weight: 700;
-  border: 2px solid transparent;
-  transition: transform .2s, border-color .2s, box-shadow .2s;
-  cursor: pointer;
-}
-.theme-item:hover { transform: scale(1.05); }
-.theme-item.active {
-  border-color: var(--accent);
-  box-shadow: 0 0 16px rgba(137,180,250,.25);
-}
-.t-nord { background: #2e3440; color: #88c0d0; }
-.t-dracula { background: #282a36; color: #bd93f9; }
-.t-mocha { background: #1e1e2e; color: #cba6f7; }
-.t-latte { background: #eff1f5; color: #8839ef; }
-.t-gruvbox { background: #282828; color: #b8bb26; }
-.t-onedark { background: #282c34; color: #61afef; }
-.t-tokyo { background: #1a1b2e; color: #bb9af7; }
+    /* ─── Download ─── */
+    .download {
+      padding: 100px 0;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+    .download h2 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    .download p {
+      color: var(--muted);
+      font-size: 16px;
+      margin-bottom: 40px;
+    }
+    .download-cards {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .download-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      min-width: 260px;
+      transition: all 0.3s;
+      text-decoration: none;
+      color: var(--fg);
+    }
+    .download-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+    .download-card svg { width: 40px; height: 40px; color: var(--accent); margin-bottom: 12px; }
+    .download-card .os { font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+    .download-card .name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .download-card .size { font-size: 12px; color: var(--muted); }
 
-/* Theme preview palette */
-.palette { margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-.palette .swatch {
-  width: 36px; height: 36px;
-  border-radius: 8px;
-  border: 2px solid var(--glass-border);
-  transition: transform .2s;
-}
-.palette .swatch:hover { transform: scale(1.15); }
-.palette-label { text-align: center; font-size: 11px; color: var(--muted); margin-top: 12px; transition: color .3s; }
-.palette-label span { color: var(--accent); font-weight: 700; transition: color .3s; }
+    /* ─── Footer ─── */
+    footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    footer p { font-size: 13px; color: var(--muted); }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
 
-.download-section { margin: 48px 0; padding: 40px; text-align: center; }
-.download-section h2 { font-size: 22px; margin-bottom: 8px; }
-.download-section p { color: var(--muted); font-size: 13px; margin-bottom: 24px; transition: color .3s; }
-.download-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-.btn {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 14px 28px;
-  border-radius: 10px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px; font-weight: 700;
-  text-decoration: none;
-  transition: transform .2s, box-shadow .2s, background .3s, color .3s;
-  cursor: pointer;
-}
-.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
-.btn-primary { background: var(--accent); color: var(--bg); }
-.btn-primary:hover { filter: brightness(1.1); }
-.btn-green { background: var(--accent2); color: var(--bg); }
-.btn-green:hover { filter: brightness(1.1); }
-.btn-secondary { background: rgba(26,27,38,.6); color: var(--fg); border: 1px solid var(--glass-border); }
-.btn-secondary:hover { background: rgba(26,27,38,.9); border-color: var(--accent); }
-.btn .small { font-size: 10px; opacity: .6; font-weight: 400; }
-
-.install { margin: 48px 0; padding: 24px; }
-.install h3 { font-size: 16px; margin-bottom: 16px; }
-.install ol { padding-left: 20px; font-size: 13px; color: var(--muted); transition: color .3s; }
-.install ol li { margin-bottom: 8px; }
-.install ol li code { background: rgba(205,214,244,.06); padding: 2px 8px; border-radius: 4px; font-size: 12px; color: var(--accent); transition: color .3s; }
-
-.commands { margin: 48px 0; padding: 24px; }
-.commands h3 { font-size: 16px; margin-bottom: 16px; }
-.cmd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; font-size: 13px; }
-.cmd-grid code { color: var(--accent); transition: color .3s; }
-.cmd-grid span { color: var(--muted); transition: color .3s; }
-
-.platform-label { display: inline-block; margin-top: 24px; font-size: 13px; color: var(--muted); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; transition: color .3s; }
-
-footer { text-align: center; padding: 32px 0; color: #585b70; font-size: 12px; }
-
-@media (max-width: 600px) {
-  header h1 { font-size: 32px; }
-  .tab-page .feature-list { grid-template-columns: 1fr; }
-  .cmd-grid { grid-template-columns: 1fr !important; }
-  .download-buttons { flex-direction: column; align-items: center; }
-  .btn { width: 100%; justify-content: center; }
-  .tab-content { padding: 16px; }
-  .terminal-output { max-height: 200px; }
-}
-</style>
+    /* ─── Responsive ─── */
+    @media (max-width: 768px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .nav-links a:not(.nav-download) { display: none; }
+      .hero { padding: 120px 0 60px; }
+      .hero h1 { font-size: 36px; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-
-  <header>
-    <h1><span>&#62;_</span> Termify</h1>
-    <p class="tagline">терминальный браузер для Android и Windows</p>
-    <span class="badge">v1.0 &middot; WebView &middot; 7 тем &middot; консоль</span>
-  </header>
-
-  <div class="terminal glass" id="term">
-    <div class="terminal-output" id="term-output">
-      <div class="line"><span class="prompt">~/termify $</span> <span class="cursor"></span></div>
-      <div class="line" style="margin-top:8px"><span class="prompt">&#9654;</span> <span class="output">╭──────────────────────────────────╮</span></div>
-      <div class="line"><span class="prompt">&#9654;</span> <span class="output">│  Termify — интерактивный демо     │</span></div>
-      <div class="line"><span class="prompt">&#9654;</span> <span class="output">│  напиши `help` для списка команд  │</span></div>
-      <div class="line"><span class="prompt">&#9654;</span> <span class="output">╰──────────────────────────────────╯</span></div>
-    </div>
-    <div class="terminal-input-line">
-      <span class="prompt">~/termify $</span>
-      <input type="text" class="terminal-input" id="term-input" placeholder="введи команду..." autofocus spellcheck="false" autocomplete="off">
+<nav>
+  <div class="container">
+    <a href="#" class="nav-logo">term<span>ify</span></a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#themes">Themes</a>
+      <a href="#download" class="nav-download">Download</a>
     </div>
   </div>
+</nav>
 
-  <div class="tab-browser glass" id="tab-browser">
-    <div class="tab-bar" id="tab-bar"></div>
-    <div class="tab-content" id="tab-content"></div>
-  </div>
-
-  <div class="themes">
-    <h2>&#9829; темы <span style="font-size:12px;color:var(--muted)">— нажми на любую</span></h2>
-    <div class="theme-grid">
-      <div class="theme-item t-nord" data-theme="nord">Nord</div>
-      <div class="theme-item t-dracula" data-theme="dracula">Dracula</div>
-      <div class="theme-item t-mocha" data-theme="mocha">Mocha</div>
-      <div class="theme-item t-latte" data-theme="latte">Latte</div>
-      <div class="theme-item t-gruvbox" data-theme="gruvbox">Gruvbox</div>
-      <div class="theme-item t-onedark" data-theme="onedark">One Dark</div>
-      <div class="theme-item t-tokyo" data-theme="tokyonight">Tokyo Night</div>
-    </div>
-    <div class="palette" id="palette"></div>
-    <div class="palette-label" id="palette-label">&#9654; <span id="palette-name">Tokyo Night</span></div>
-  </div>
-
-  <div class="download-section glass">
-    <h2>&#9660; скачать</h2>
-
-    <p class="platform-label">&#9729; Android</p>
-    <p style="margin-bottom:16px">APK для Android 7+ (API 24+) ~13 МБ</p>
-    <div class="download-buttons" style="margin-bottom:12px">
-      <a href="apk/Termify.apk" class="btn btn-primary" download>
-        &#9660; Скачать APK <span class="small">release</span>
-      </a>
-      <a href="apk/Termify-debug.apk" class="btn btn-secondary" download>
-        &#9660; Debug <span class="small">неоптимизирован</span>
-      </a>
-    </div>
-
-    <p class="platform-label">&#9000; Windows</p>
-    <p style="margin-bottom:16px">Портативная сборка (.NET 8 + WebView2) ~3 МБ</p>
-    <div class="download-buttons">
-      <a href="pc/Termify.exe" class="btn btn-green" download>
-        &#9660; Скачать Termify.exe <span class="small">требуется .NET 8 Runtime</span>
-      </a>
-    </div>
-  </div>
-
-  <div class="install glass">
-    <h3>&#9432; установка</h3>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 24px; font-size: 13px;">
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
       <div>
-        <p style="color:var(--accent); font-weight:700; margin-bottom:8px; transition:color .3s;">&#9729; Android</p>
-        <ol style="padding-left:20px; color:var(--muted); transition:color .3s;">
-          <li>Скачай APK на планшет/телефон</li>
-          <li>Открой файл — Android попросит разрешить установку</li>
-          <li>Разреши <code>Установка из неизвестных источников</code></li>
-          <li>Нажми <code>Установить</code></li>
-        </ol>
+        <div class="hero-badge">v0.1.0 · desktop</div>
+        <h1>Terminal<br><em>browser</em></h1>
+        <p>Minimalist browser with a built-in console. Navigate the web, manage tabs, switch themes — all from the command line.</p>
+        <div class="hero-ctas">
+          <a href="#download" class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download
+          </a>
+          <a href="https://github.com/IlyaSigma111/Termify" class="btn btn-secondary">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+          </a>
+        </div>
       </div>
-      <div>
-        <p style="color:var(--accent2); font-weight:700; margin-bottom:8px; transition:color .3s;">&#9000; Windows</p>
-        <ol style="padding-left:20px; color:var(--muted); transition:color .3s;">
-          <li>Скачай <code>Termify.exe</code></li>
-          <li>Установи <code>.NET 8 Runtime</code> если ещё нет</li>
-          <li>Запусти — браузер готов к работе</li>
-          <li>Требуется <code>WebView2 Runtime</code> (обычно уже есть в Windows 11)</li>
-        </ol>
+      <div class="hero-visual">
+        <div class="hero-terminal">
+          <div class="terminal-dots">
+            <span class="terminal-dot r"></span>
+            <span class="terminal-dot y"></span>
+            <span class="terminal-dot g"></span>
+          </div>
+          <div class="terminal-content">
+            <div class="terminal-line"><span class="prompt">❯</span> <span class="cmd">open youtube.com</span></div>
+            <div class="terminal-line"><span class="prompt">❯</span> <span class="cmd">theme dracula</span></div>
+            <div class="terminal-line"><span class="res">theme set to dracula</span></div>
+            <div class="terminal-line"><span class="prompt">❯</span> <span class="cmd">bookmark</span></div>
+            <div class="terminal-line"><span class="res">bookmarked: YouTube</span></div>
+            <div class="terminal-line"><span class="prompt">❯</span> <span class="accent">term</span><span class="terminal-cursor"></span></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+</section>
 
-  <div class="commands glass">
-    <h3>&#62;_ команды консоли <span style="font-size:12px;color:var(--muted)">— попробуй в терминале выше</span></h3>
-    <div class="cmd-grid" style="grid-template-columns:1fr 1fr 1fr">
-      <code>help</code><span>список команд</span>
-      <code>search &lt;q&gt;</code><span>поиск</span>
-      <code>theme &lt;имя&gt;</code><span>сменить тему</span>
-      <code>calc &lt;выр&gt;</code><span>калькулятор</span>
-      <code>roll [max]</code><span>рандом</span>
-      <code>coinflip</code><span>орёл/решка</span>
-      <code>settings</code><span>настройки</span>
-      <code>clear</code><span>очистить</span>
-      <code>echo &lt;txt&gt;</code><span>повторить</span>
-      <code>date</code><span>дата/время</span>
-      <code>whoami</code><span>кто ты</span>
-      <code>neofetch</code><span>система</span>
-      <code>palette</code><span>палитра</span>
-      <code>uptime</code><span>сессия</span>
-      <code>history</code><span>история</span>
-      <code>banner</code><span>привет</span>
-      <code>weather</code><span>погода</span>
-      <code>sudo</code><span>root</span>
-      <code>exit</code><span>выход</span>
-    </div>
-    <div style="margin-top:12px;font-size:11px;color:var(--muted);text-align:center">
-      &#8593;&#8595; история команд &middot; Tab автодополнение &middot; &#9889; 20+ команд
+<section class="features" id="features">
+  <div class="container">
+    <h2>Built for the terminal</h2>
+    <p class="features-sub">Everything you expect from a browser, none of the bloat.</p>
+    <div class="features-grid">
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        </div>
+        <h3>Built-in Console</h3>
+        <p>Navigate the web, manage bookmarks, change themes — all from the command line. No mouse needed.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <h3>Tab Management</h3>
+        <p>Multiple tabs with keyboard shortcuts. Switch, close, reorder — all from the terminal or the UI.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/><line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/><line x1="14.83" y1="9.17" x2="18.36" y2="5.64"/><line x1="4.93" y1="19.07" x2="9.17" y2="14.83"/></svg>
+        </div>
+        <h3>7 Handcrafted Themes</h3>
+        <p>Nord, Dracula, Mocha, Latte, Gruvbox, OneDark, TokyoNight. Switch instantly with a single command.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+        </div>
+        <h3>GitHub OAuth</h3>
+        <p>Log in with GitHub directly from the terminal. Device flow — no tokens to paste, no browsers to open.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <h3>Full Browser Engine</h3>
+        <p>Powered by Edge Chromium. Open any site in your default browser directly from the Termify command line.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        </div>
+        <h3>Bookmarks & History</h3>
+        <p>Bookmark pages, browse history, search — all persisted across sessions. Your data stays local.</p>
+      </div>
+
     </div>
   </div>
+</section>
 
-  <footer>
-    Termify &mdash; собрано на .NET 8 + WebView (Android) / WebView2 (Windows)<br>
-    исходный код по запросу
-  </footer>
+<section class="themes" id="themes">
+  <div class="container">
+    <h2>7 themes, one command</h2>
+    <p class="themes-sub">Switch themes instantly with <code style="font-family:var(--mono);color:var(--accent);background:var(--bg3);padding:2px 8px;border-radius:4px;font-size:14px;">theme &lt;name&gt;</code></p>
+    <div class="theme-circles">
+      <div class="theme-item"><div class="theme-circle theme-nord"></div><span>nord</span></div>
+      <div class="theme-item"><div class="theme-circle theme-dracula"></div><span>dracula</span></div>
+      <div class="theme-item"><div class="theme-circle theme-mocha"></div><span>mocha</span></div>
+      <div class="theme-item"><div class="theme-circle theme-latte"></div><span>latte</span></div>
+      <div class="theme-item"><div class="theme-circle theme-gruvbox"></div><span>gruvbox</span></div>
+      <div class="theme-item"><div class="theme-circle theme-onedark"></div><span>onedark</span></div>
+      <div class="theme-item"><div class="theme-circle theme-tokyo"></div><span>tokyonight</span></div>
+    </div>
+  </div>
+</section>
 
-</div>
+<section class="download" id="download">
+  <div class="container">
+    <h2>Get Termify</h2>
+    <p>Free. Open source. No sign-up required.</p>
+    <div class="download-cards">
+      <a href="pc/Termify_x64_en-US.msi" class="download-card" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        <div class="os">Windows</div>
+        <div class="name">Termify x64</div>
+        <div class="size">MSI · ~13 MB</div>
+      </a>
+      <a href="https://github.com/IlyaSigma111/Termify" class="download-card" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        <div class="os">Source</div>
+        <div class="name">GitHub</div>
+        <div class="size">Star · Fork · Build</div>
+      </a>
+    </div>
+  </div>
+</section>
 
-<script>
-const themes = {
-  nord: {
-    label: 'Nord',
-    bg: '#2e3440', fg: '#d8dee9', muted: '#616e88',
-    accent: '#88c0d0', accent2: '#a3be8c', accent3: '#bf616a',
-    glassBg: 'rgba(46,52,64,.8)', glassBorder: 'rgba(216,222,233,.1)',
-    glow1: 'rgba(136,192,208,.06)', glow2: 'rgba(129,161,193,.05)',
-    badgeBg: 'rgba(136,192,208,.15)', badgeBorder: 'rgba(136,192,208,.25)',
-    palette: ['#88c0d0','#81a1c1','#a3be8c','#bf616a','#b48ead','#ebcb8b']
-  },
-  dracula: {
-    label: 'Dracula',
-    bg: '#282a36', fg: '#f8f8f2', muted: '#6272a4',
-    accent: '#bd93f9', accent2: '#50fa7b', accent3: '#ff5555',
-    glassBg: 'rgba(40,42,54,.8)', glassBorder: 'rgba(248,248,242,.08)',
-    glow1: 'rgba(189,147,249,.06)', glow2: 'rgba(80,250,123,.05)',
-    badgeBg: 'rgba(189,147,249,.15)', badgeBorder: 'rgba(189,147,249,.25)',
-    palette: ['#bd93f9','#6272a4','#50fa7b','#ff5555','#ffb86c','#8be9fd']
-  },
-  mocha: {
-    label: 'Catppuccin Mocha',
-    bg: '#1e1e2e', fg: '#cdd6f4', muted: '#6c7086',
-    accent: '#cba6f7', accent2: '#a6e3a1', accent3: '#f38ba8',
-    glassBg: 'rgba(30,30,46,.8)', glassBorder: 'rgba(205,214,244,.08)',
-    glow1: 'rgba(203,166,247,.06)', glow2: 'rgba(137,180,250,.05)',
-    badgeBg: 'rgba(203,166,247,.15)', badgeBorder: 'rgba(203,166,247,.25)',
-    palette: ['#cba6f7','#89b4fa','#a6e3a1','#f38ba8','#fab387','#94e2d5']
-  },
-  latte: {
-    label: 'Catppuccin Latte',
-    bg: '#eff1f5', fg: '#4c4f69', muted: '#9ca0b0',
-    accent: '#8839ef', accent2: '#40a02b', accent3: '#d20f39',
-    glassBg: 'rgba(239,241,245,.85)', glassBorder: 'rgba(76,79,105,.12)',
-    glow1: 'rgba(136,57,239,.06)', glow2: 'rgba(30,102,245,.05)',
-    badgeBg: 'rgba(136,57,239,.12)', badgeBorder: 'rgba(136,57,239,.2)',
-    palette: ['#8839ef','#1e66f5','#40a02b','#d20f39','#fe640b','#04a5e5']
-  },
-  gruvbox: {
-    label: 'Gruvbox',
-    bg: '#282828', fg: '#ebdbb2', muted: '#928374',
-    accent: '#d3869b', accent2: '#b8bb26', accent3: '#fb4934',
-    glassBg: 'rgba(40,40,40,.8)', glassBorder: 'rgba(235,219,178,.1)',
-    glow1: 'rgba(211,134,155,.06)', glow2: 'rgba(184,187,38,.05)',
-    badgeBg: 'rgba(211,134,155,.15)', badgeBorder: 'rgba(211,134,155,.25)',
-    palette: ['#d3869b','#83a598','#b8bb26','#fb4934','#fabd2f','#8ec07c']
-  },
-  onedark: {
-    label: 'One Dark',
-    bg: '#282c34', fg: '#abb2bf', muted: '#5c6370',
-    accent: '#61afef', accent2: '#98c379', accent3: '#e06c75',
-    glassBg: 'rgba(40,44,52,.8)', glassBorder: 'rgba(171,178,191,.08)',
-    glow1: 'rgba(97,175,239,.06)', glow2: 'rgba(198,120,221,.04)',
-    badgeBg: 'rgba(97,175,239,.15)', badgeBorder: 'rgba(97,175,239,.25)',
-    palette: ['#61afef','#c678dd','#98c379','#e06c75','#d19a66','#56b6c2']
-  },
-  tokyonight: {
-    label: 'Tokyo Night',
-    bg: '#12121e', fg: '#a9b1d6', muted: '#565f89',
-    accent: '#bb9af7', accent2: '#9ece6a', accent3: '#f7768e',
-    glassBg: 'rgba(18,18,30,.8)', glassBorder: 'rgba(169,177,214,.08)',
-    glow1: 'rgba(187,154,247,.06)', glow2: 'rgba(122,162,247,.05)',
-    badgeBg: 'rgba(187,154,247,.15)', badgeBorder: 'rgba(187,154,247,.25)',
-    palette: ['#bb9af7','#7aa2f7','#9ece6a','#f7768e','#e0af68','#73daca']
-  }
-};
+<footer>
+  <div class="container">
+    <p>Termify · <a href="https://github.com/IlyaSigma111/Termify">GitHub</a> · Made with Rust + Tauri</p>
+  </div>
+</footer>
 
-function applyTheme(name) {
-  const t = themes[name];
-  if (!t) return;
-  const r = document.documentElement.style;
-  r.setProperty('--bg', t.bg);
-  r.setProperty('--fg', t.fg);
-  r.setProperty('--muted', t.muted);
-  r.setProperty('--accent', t.accent);
-  r.setProperty('--accent2', t.accent2);
-  r.setProperty('--accent3', t.accent3);
-  r.setProperty('--glass-bg', t.glassBg);
-  r.setProperty('--glass-border', t.glassBorder);
-  r.setProperty('--glow1', t.glow1);
-  r.setProperty('--glow2', t.glow2);
-  r.setProperty('--badge-bg', t.badgeBg);
-  r.setProperty('--badge-border', t.badgeBorder);
-
-  document.querySelectorAll('.theme-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.theme === name);
-  });
-
-  const palette = document.getElementById('palette');
-  palette.innerHTML = t.palette.map(c => `<div class="swatch" style="background:${c}" title="${c}"></div>`).join('');
-
-  document.getElementById('palette-name').textContent = t.label;
-
-  localStorage.setItem('termify-theme', name);
-}
-
-document.querySelectorAll('.theme-item').forEach(el => {
-  el.addEventListener('click', () => applyTheme(el.dataset.theme));
-});
-
-const saved = localStorage.getItem('termify-theme');
-if (saved && themes[saved]) {
-  applyTheme(saved);
-} else {
-  applyTheme('tokyonight');
-}
-
-/* Tab browser demo */
-(function() {
-  const tabData = [
-    { id: 'features', fav: '&#9889;', title: 'Features', content: `
-      <h3>&#9889; Возможности Termify</h3>
-      <p>Терминальный браузер с консолью, вкладками, темами и гибкими настройками.</p>
-      <div class="feature-list">
-        <div class="feature-item">
-          <div class="fi-icon">&#9001;</div>
-          <div>
-            <div class="fi-title">Консоль</div>
-            <div class="fi-desc">Alt+F или кнопка &#62;_ — открывай терминал. Команды, поиск, смена темы на лету.</div>
-          </div>
-        </div>
-        <div class="feature-item">
-          <div class="fi-icon">&#9776;</div>
-          <div>
-            <div class="fi-title">Вкладки</div>
-            <div class="fi-desc">Множество вкладок с переключением. Долгий тап — закрыть. Плавная анимация.</div>
-          </div>
-        </div>
-        <div class="feature-item">
-          <div class="fi-icon">&#9728;</div>
-          <div>
-            <div class="fi-title">7 тем</div>
-            <div class="fi-desc">Nord, Dracula, Catppuccin Mocha &amp; Latte, Gruvbox, One Dark, Tokyo Night.</div>
-          </div>
-        </div>
-        <div class="feature-item">
-          <div class="fi-icon">&#9881;</div>
-          <div>
-            <div class="fi-title">Настройки</div>
-            <div class="fi-desc">Размер шрифта, поисковик, выбор темы — всё в одной панели.</div>
-          </div>
-        </div>
-        <div class="feature-item">
-          <div class="fi-icon">&#9000;</div>
-          <div>
-            <div class="fi-title">Кроссплатформа</div>
-            <div class="fi-desc">Android (WebView) и Windows (WebView2). Единый код на .NET 8.</div>
-          </div>
-        </div>
-      </div>
-    `},
-    { id: 'commands', fav: '&#62;_', title: 'Команды', content: `
-      <h3>&#62;_ Команды консоли</h3>
-      <p style="margin-bottom:16px">Напиши любую команду в терминале на этой странице и увидишь результат.</p>
-      <div class="cmd-grid" style="max-width:500px">
-        <code>help</code><span>список команд</span>
-        <code>search &lt;запрос&gt;</code><span>поиск в интернете</span>
-        <code>theme &lt;имя&gt;</code><span>сменить тему</span>
-        <code>settings</code><span>инфо о настройках</span>
-        <code>calc &lt;выр&gt;</code><span>калькулятор</span>
-        <code>roll / coinflip</code><span>рандом</span>
-        <code>clear</code><span>очистить терминал</span>
-        <code>echo &lt;текст&gt;</code><span>повторить текст</span>
-        <code>date / time</code><span>дата и время</span>
-        <code>whoami</code><span>кто ты</span>
-        <code>neofetch</code><span>инфо о системе</span>
-        <code>palette</code><span>палитра темы</span>
-        <code>uptime</code><span>время сессии</span>
-        <code>weather</code><span>погода</span>
-        <code>banner</code><span>приветствие</span>
-        <code>sudo &lt;cmd&gt;</code><span>ха-ха</span>
-        <code>exit</code><span>закрыть Termify</span>
-      </div>
-    `},
-    { id: 'platforms', fav: '&#127760;', title: 'Платформы', content: `
-      <h3>&#127760; Android и Windows</h3>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px">
-        <div class="feature-item" style="display:block; text-align:center; padding:20px">
-          <div style="font-size:36px; margin-bottom:8px">&#9729;</div>
-          <div class="fi-title">Android</div>
-          <div class="fi-desc" style="margin-top:4px">API 24+<br>WebView<br>APK ~13 МБ</div>
-        </div>
-        <div class="feature-item" style="display:block; text-align:center; padding:20px">
-          <div style="font-size:36px; margin-bottom:8px">&#9000;</div>
-          <div class="fi-title">Windows</div>
-          <div class="fi-desc" style="margin-top:4px">.NET 8<br>WebView2<br>Single-file ~3 МБ</div>
-        </div>
-      </div>
-      <p style="margin-top:16px; font-size:12px; color:var(--muted)">&#9654; Скопируй APK или exe из раздела «скачать» ниже.</p>
-    `}
-  ];
-
-  let tabs = tabData.map(t => ({ ...t }));
-  let activeTab = 'features';
-  let tabCounter = 4;
-
-  const tabBar = document.getElementById('tab-bar');
-  const tabContent = document.getElementById('tab-content');
-
-  function renderTabs() {
-    tabBar.innerHTML = '';
-    tabs.forEach((t, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'tab-btn' + (t.id === activeTab ? ' active' : '');
-      btn.innerHTML = '<span class="tab-fav">' + t.fav + '</span><span class="tab-title">' + t.title + '</span>';
-      if (tabs.length > 1) {
-        const close = document.createElement('span');
-        close.className = 'tab-close';
-        close.textContent = '&#10005;';
-        close.addEventListener('click', function(e) {
-          e.stopPropagation();
-          tabs.splice(i, 1);
-          if (activeTab === t.id) {
-            activeTab = tabs[Math.min(i, tabs.length - 1)].id;
-          }
-          renderTabs();
-        });
-        btn.appendChild(close);
-      }
-      btn.addEventListener('click', function() { activeTab = t.id; renderTabs(); });
-      tabBar.appendChild(btn);
-    });
-    const addBtn = document.createElement('button');
-    addBtn.className = 'tab-add';
-    addBtn.textContent = '+';
-    addBtn.addEventListener('click', function() {
-      const n = tabCounter++;
-      const id = 'tab-' + n;
-      const labels = ['&#128214;', '&#127911;', '&#128187;', '&#128752;', '&#127760;', '&#128065;', '&#9889;', '&#128640;'];
-      tabs.push({ id: id, fav: labels[(n-4) % labels.length], title: 'Page ' + n, content: '<h3>Вкладка #' + n + '</h3><p>Новая вкладка! Настоящий браузер Termify поддерживает неограниченное количество вкладок. Можно открыть хоть 100 вкладок — всё будет летать.</p><p style="margin-top:8px;font-size:12px;color:var(--muted)">&#9654; Долгий тап по вкладке в Termify закрывает её. Нажми &#10005; чтобы закрыть эту.</p>' });
-      activeTab = id;
-      renderTabs();
-    });
-    tabBar.appendChild(addBtn);
-
-    const active = tabs.find(t => t.id === activeTab) || tabs[0];
-    tabContent.innerHTML = active.content;
-    Array.from(tabContent.querySelectorAll('.cmd-grid code, .cmd-grid span')).forEach(el => {
-      el.style.transition = 'color .3s';
-    });
-    if (!tabs.find(t => t.id === activeTab)) {
-      activeTab = tabs[0].id;
-    }
-  }
-
-  renderTabs();
-})();
-
-/* Interactive terminal */
-(function() {
-  const output = document.getElementById('term-output');
-  const input = document.getElementById('term-input');
-  const term = document.getElementById('term');
-  const cmdHistory = [];
-  let historyIdx = -1;
-  let startTime = Date.now();
-  const suggestions = ['help','search','theme','settings','clear','echo','date','time','whoami','neofetch','exit','calc','roll','coinflip','uptime','history','banner','sudo','weather','palette','colors'];
-
-  function termEscape(html) {
-    const d = document.createElement('div');
-    d.textContent = html;
-    return d.innerHTML;
-  }
-
-  function termLine(html, cls) {
-    const div = document.createElement('div');
-    div.className = 'line' + (cls ? ' ' + cls : '');
-    div.innerHTML = html;
-    return div;
-  }
-
-  function termWriteln(html, cls) {
-    if (output.childElementCount > 200) {
-      while (output.childElementCount > 150) output.removeChild(output.firstChild);
-    }
-    output.appendChild(termLine(html, cls));
-    output.scrollTop = output.scrollHeight;
-  }
-
-  function termPromptLine(cmd) {
-    termWriteln(`<span class="prompt">~/termify $</span> ${termEscape(cmd)}`);
-  }
-
-  function cmdHelp() {
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">╭──────────────────────────────────────────╮</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  help         — список команд             │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  search &lt;q&gt;  — поиск в интернете         │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  theme &lt;имя&gt;  — сменить тему страницы     │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  settings     — информация о настройках    │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  calc &lt;выр&gt;   — калькулятор               │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  roll [max]   — случайное число            │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  coinflip     — орёл или решка             │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  clear        — очистить терминал          │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  echo &lt;txt&gt;  — повторить текст            │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  date         — текущая дата и время        │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  whoami       — кто ты?                    │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  neofetch     — инфа о системе             │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  palette      — показать палитру темы       │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  uptime       — время работы сессии         │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  history      — история команд              │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  banner       — показать приветствие        │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  weather      — погода (демо)              │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  sudo &lt;cmd&gt;   — выполнить с root правами   │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">│  exit         — закрыть Termify            │</span>');
-    termWriteln('<span class="prompt">&#9654;</span> <span class="output">╰──────────────────────────────────────────╯</span>');
-    termWriteln(`<span class="info">&#9654; стрелки &#8593;&#8595; — история, Tab — автодополнение</span>`);
-  }
-
-  function cmdTheme(args) {
-    if (!args) {
-      const current = localStorage.getItem('termify-theme') || 'tokyonight';
-      termWriteln(`<span class="prompt">&#9654;</span> <span class="output">текущая тема: ${themes[current].label}</span>`);
-      termWriteln(`<span class="info">&#9654; доступны: nord, dracula, mocha, latte, gruvbox, onedark, tokyonight</span>`);
-      return;
-    }
-    const name = args.trim().toLowerCase().replace(/\s+/g, '');
-    if (!themes[name]) {
-      termWriteln(`<span class="err">&#10008; тема "${termEscape(args.trim())}" не найдена</span>`);
-      return;
-    }
-    applyTheme(name);
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">тема &#8594; ${themes[name].label}</span>`);
-  }
-
-  function cmdSearch(q) {
-    if (!q) {
-      termWriteln(`<span class="err">&#10008; укажи поисковый запрос: search &lt;что ищешь?&gt;</span>`);
-      return;
-    }
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output2">поиск: ${termEscape(q.trim())}</span>`);
-    termWriteln(`<span class="info">&#9654; открыл бы https://google.com/search?q=${encodeURIComponent(q.trim())}</span>`);
-  }
-
-  function cmdEcho(args) {
-    termWriteln(`<span class="prompt">&#9654;</span> ${termEscape(args || '')}`);
-  }
-
-  function cmdDate() {
-    const d = new Date();
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">${d.toLocaleString('ru-RU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>`);
-  }
-
-  function cmdWhoami() {
-    const names = ['Путешественник во времени', 'Хакер из 90-х', 'Терминатор', 'Нео', 'Создатель вселенных', 'Просто Вася', 'Пользователь Termify'];
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">${names[Math.floor(Math.random() * names.length)]}</span>`);
-  }
-
-  function cmdNeofetch() {
-    const h = navigator.userAgent;
-    const lang = navigator.language || 'ru-RU';
-    const cores = navigator.hardwareConcurrency || '?';
-    const mem = (navigator.deviceMemory || '?') + ' ГБ';
-    const v = '1.0.0';
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">╭──────────────────────────────────────╮</span>`);
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│  Termify v${v.padEnd(27)}│</span>`);
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│  ├─ Browser: ${termEscape((h.includes('Chrome')?'Chrome':h.includes('Firefox')?'Firefox':h.includes('Safari')?'Safari':'Chromium').padEnd(23))}│</span>`);
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│  ├─ Lang: ${lang.padEnd(27)}│</span>`);
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│  ├─ CPU cores: ${String(cores).padEnd(21)}│</span>`);
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│  ├─ RAM: ${mem.padEnd(28)}│</span>`);
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│  └─ Theme: ${(localStorage.getItem('termify-theme') || 'tokyonight').padEnd(26)}│</span>`);
-    const bar = '&#9608;'.repeat(Math.min(cores, 16));
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│     ${bar.padEnd(36)}│</span>`);
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">╰──────────────────────────────────────╯</span>`);
-  }
-
-  function cmdSettings() {
-    const tname = themes[localStorage.getItem('termify-theme') || 'tokyonight'].label;
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">&#9881; Настройки Termify</span>`);
-    termWriteln(`<span class="info">  &#9654; тема: ${tname}</span>`);
-    termWriteln(`<span class="info">  &#9654; шрифт: JetBrains Mono, 14px</span>`);
-    termWriteln(`<span class="info">  &#9654; поисковик: Google</span>`);
-    termWriteln(`<span class="info">  &#9654; консоль: Alt+F / &#62;_</span>`);
-    termWriteln(`<span class="info">  &#9654; вкладки: неограниченно</span>`);
-    termWriteln(`<span class="info">  &#9654; платформы: Android + Windows</span>`);
-  }
-
-  function cmdCalc(expr) {
-    if (!expr) { termWriteln(`<span class="err">&#10008; пример: calc 2 + 2 * 3</span>`); return; }
-    try {
-      const sanitized = expr.replace(/[^0-9+\-*/.()%^ ,]/g, '').replace(/\^/g, '**');
-      if (!sanitized) throw new Error('пусто');
-      const result = Function('"use strict"; return (' + sanitized + ')')();
-      termWriteln(`<span class="prompt">&#9654;</span> <span class="output">${termEscape(expr.trim())} = ${result}</span>`);
-    } catch (e) {
-      termWriteln(`<span class="err">&#10008; ошибка в выражении: ${termEscape(expr.trim())}</span>`);
-    }
-  }
-
-  function cmdRoll(max) {
-    const m = parseInt(max) || 100;
-    const r = Math.floor(Math.random() * m) + 1;
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">&#9856; ${r} (1-${m})</span>`);
-  }
-
-  function cmdCoinflip() {
-    const r = Math.random() < 0.5 ? '&#9783; Орёл' : '&#127760; Решка';
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">${r}</span>`);
-  }
-
-  function cmdUptime() {
-    const sec = Math.floor((Date.now() - startTime) / 1000);
-    const h = Math.floor(sec / 3600);
-    const m = Math.floor((sec % 3600) / 60);
-    const s = sec % 60;
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">сессия: ${h?h+'ч ':''}${m?m+'м ':''}${s}с</span>`);
-  }
-
-  function cmdHistory() {
-    if (!cmdHistory.length) { termWriteln(`<span class="info">&#9654; история пуста</span>`); return; }
-    const unique = [...new Set(cmdHistory)];
-    unique.forEach((c, i) => termWriteln(`<span class="info">${String(i+1).padStart(3)}  ${termEscape(c)}</span>`));
-  }
-
-  function cmdBanner() {
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">╭──────────────────────────────────╮</span>`);
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│  Termify — терминальный браузер  │</span>`);
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│  версия 1.0 | 7 тем | консоль    │</span>`);
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">│  напиши help для списка команд   │</span>`);
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">╰──────────────────────────────────╯</span>`);
-  }
-
-  function cmdSudo(args) {
-    if (!args) { termWriteln(`<span class="output2">&#9654; Usage: sudo &lt;команда&gt;</span>`); return; }
-    if (args.trim().toLowerCase() === 'rm -rf /') {
-      termWriteln(`<span class="output2">&#9654; nice try. но это демо-версия :)</span>`);
-      return;
-    }
-    termWriteln(`<span class="output2">&#9654; Permission denied. (это демо, но выглядит круто, да?)</span>`);
-    termWriteln(`<span class="info">  &#9654; sudo ${termEscape(args.trim())} — отклонено с превеликим удовольствием</span>`);
-  }
-
-  function cmdWeather() {
-    const cond = ['&#9728; ясно', '&#9925; облачно', '&#127782; дождь', '&#9928; снег', '&#127788; ветер', '&#127780; туман'];
-    const temp = Math.floor(Math.random() * 30) + 5;
-    const c = cond[Math.floor(Math.random() * cond.length)];
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">${c}, ${temp}&#176;C</span>`);
-    termWriteln(`<span class="info">  &#9654; влажность: ${Math.floor(Math.random()*40+40)}%</span>`);
-    termWriteln(`<span class="info">  &#9654; ветер: ${Math.floor(Math.random()*10+1)} м/с</span>`);
-  }
-
-  function cmdPalette() {
-    const t = themes[localStorage.getItem('termify-theme') || 'tokyonight'];
-    const colors = t.palette || [];
-    const line = colors.map(c => {
-      const r = parseInt(c.slice(1,3),16), g = parseInt(c.slice(3,5),16), b = parseInt(c.slice(5,7),16);
-      const lum = (0.299*r + 0.587*g + 0.114*b) / 255;
-      const fg = lum > 0.5 ? '#000' : '#fff';
-      return `<span style="display:inline-block;width:44px;height:44px;border-radius:6px;background:${c};color:${fg};line-height:44px;text-align:center;font-size:9px;margin:2px">&#9632;</span>`;
-    }).join('');
-    termWriteln(`<span class="prompt">&#9654;</span> <span class="output">палитра: ${themes[localStorage.getItem('termify-theme')||'tokyonight'].label}</span>`);
-    termWriteln(`<span>${line}</span>`);
-    termWriteln(`<span class="info" style="margin-top:4px;display:block">  ${colors.map(c => c).join(' &#183; ')}</span>`);
-  }
-
-  function cmdExit() {
-    termWriteln(`<span class="output2">&#9654; Termify завершает работу...</span>`);
-    setTimeout(() => {
-      termWriteln(`<span class="output2">&#9654; (это демо-версия, браузер не закроется) </span>`);
-      termWriteln(`<span class="info">&#9654; в реальном приложении ` + "`exit`" + ` закроет Termify.</span>`);
-    }, 600);
-  }
-
-  function handleCommand(cmd) {
-    const trimmed = cmd.trim();
-    termPromptLine(trimmed);
-    if (trimmed) cmdHistory.push(trimmed);
-    historyIdx = cmdHistory.length;
-
-    const parts = trimmed.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
-    const command = parts[0] ? parts[0].toLowerCase() : '';
-    const args = parts.slice(1).join(' ').replace(/^"(.*)"$/, '$1');
-
-    switch (command) {
-      case 'help': cmdHelp(); break;
-      case 'theme': cmdTheme(args); break;
-      case 'search': cmdSearch(args); break;
-      case 'clear': output.innerHTML = ''; break;
-      case 'echo': cmdEcho(args); break;
-      case 'date': case 'time': cmdDate(); break;
-      case 'whoami': cmdWhoami(); break;
-      case 'neofetch': cmdNeofetch(); break;
-      case 'settings': cmdSettings(); break;
-      case 'calc': case 'calculate': cmdCalc(args); break;
-      case 'roll': case 'dice': cmdRoll(args); break;
-      case 'coinflip': case 'flip': cmdCoinflip(); break;
-      case 'uptime': cmdUptime(); break;
-      case 'history': cmdHistory(); break;
-      case 'banner': cmdBanner(); break;
-      case 'sudo': cmdSudo(args); break;
-      case 'weather': cmdWeather(); break;
-      case 'palette': case 'colors': cmdPalette(); break;
-      case 'exit': cmdExit(); break;
-      case '': break;
-      default:
-        termWriteln(`<span class="err">&#10008; команда не найдена: ${termEscape(command)}. Напиши help</span>`);
-    }
-  }
-
-  function termAutocomplete(value) {
-    if (!value) return null;
-    const lower = value.toLowerCase();
-    const matches = suggestions.filter(s => s.startsWith(lower) && s !== lower);
-    if (matches.length === 1) return matches[0];
-    if (matches.length > 1) {
-      const prefix = matches.reduce((p, s) => {
-        let i = 0;
-        while (i < p.length && i < s.length && p[i] === s[i]) i++;
-        return p.slice(0, i);
-      }, matches[0]);
-      if (prefix.length > lower.length) return prefix;
-      termWriteln(`<span class="info">&#9654; ${matches.join(', ')}</span>`);
-    }
-    return null;
-  }
-
-  input.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-      const cmd = input.value;
-      input.value = '';
-      if (cmd.trim()) handleCommand(cmd);
-      e.preventDefault();
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (cmdHistory.length && historyIdx > 0) {
-        historyIdx--;
-        input.value = cmdHistory[historyIdx];
-      }
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (historyIdx < cmdHistory.length - 1) {
-        historyIdx++;
-        input.value = cmdHistory[historyIdx];
-      } else {
-        historyIdx = cmdHistory.length;
-        input.value = '';
-      }
-    } else if (e.key === 'Tab') {
-      e.preventDefault();
-      const completed = termAutocomplete(input.value);
-      if (completed) input.value = completed + ' ';
-    }
-  });
-
-  term.addEventListener('click', function() { input.focus(); });
-
-  input.focus();
-})();
-</script>
 </body>
 </html>
